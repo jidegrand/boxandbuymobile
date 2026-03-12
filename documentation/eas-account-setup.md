@@ -2,16 +2,17 @@
 
 Current status on this server:
 - `eas-cli` can be reached with `npx eas-cli@latest`
-- no Expo login or `EXPO_TOKEN` is configured
-- no EAS project ID is available for this app yet
+- Expo auth works with `EXPO_TOKEN`
+- EAS project already exists for this app
+- project ID: `9301296b-5907-40c3-a904-248e83b0f633`
 
 ## Required Input
-One of these is required before builds can continue:
-- run `npx eas-cli@latest login` on this server
+Expo auth is required before builds can continue:
+- run `npx eas-cli@latest login` on this server, or
 - export `EXPO_TOKEN` for a non-interactive Expo account session
 
 ## Project Link
-After login, run from `/var/www/mobiledev`:
+If you need to recreate the link, run from `/var/www/mobiledev/apps/mobile`:
 
 ```bash
 npx eas-cli@latest project:init
@@ -21,7 +22,7 @@ If the project already exists in Expo, link it instead:
 
 ```bash
 npx eas-cli@latest project:info
-npx eas-cli@latest init --id <existing-project-id>
+npx eas-cli@latest project:init --id 9301296b-5907-40c3-a904-248e83b0f633 --force
 ```
 
 ## Mobile Env Update
@@ -33,7 +34,7 @@ Once the project ID is known, set it in:
 Required key:
 
 ```dotenv
-EXPO_PUBLIC_EAS_PROJECT_ID=<project-id>
+EXPO_PUBLIC_EAS_PROJECT_ID=9301296b-5907-40c3-a904-248e83b0f633
 ```
 
 ## First Build Commands

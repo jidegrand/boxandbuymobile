@@ -1,7 +1,10 @@
 import type { ConfigContext, ExpoConfig } from "expo/config";
 
+const defaultEasProjectId = "9301296b-5907-40c3-a904-248e83b0f633";
+
 export default function appConfig(_context: ConfigContext): ExpoConfig {
   const deepLinkDomain = process.env.EXPO_PUBLIC_DEEP_LINK_DOMAIN ?? "";
+  const easProjectId = process.env.EXPO_PUBLIC_EAS_PROJECT_ID ?? defaultEasProjectId;
   const updatesUrl = process.env.EXPO_PUBLIC_UPDATES_URL ?? "";
 
   return {
@@ -56,7 +59,7 @@ export default function appConfig(_context: ConfigContext): ExpoConfig {
       stripePublishableKey: process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "",
       appEnv: process.env.EXPO_PUBLIC_APP_ENV ?? "development",
       eas: {
-        projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID ?? ""
+        projectId: easProjectId
       },
       deepLinkDomain,
       updatesUrl
