@@ -4,13 +4,13 @@ import { StripeProvider } from "@stripe/stripe-react-native";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import type { ReactNode } from "react";
+import type { ReactElement } from "react";
 
 import { useSessionBootstrap } from "../hooks/use-session";
 import { env } from "../lib/env";
 import { queryClient } from "../lib/query-client";
 
-function Providers({ children }: { children: ReactNode }) {
+function Providers({ children }: { children: ReactElement }) {
   const publishableKey = env.stripePublishableKey;
 
   if (!publishableKey) {

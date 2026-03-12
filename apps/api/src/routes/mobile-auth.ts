@@ -13,7 +13,7 @@ import express from "express";
 import { issueAccessToken, verifyAccessToken } from "../auth/access-token";
 import { RefreshStore } from "../auth/refresh-store";
 import { env } from "../env";
-import type { AuthProvider } from "../services/auth-provider";
+import { AuthProviderError, type AuthProvider } from "../services/auth-provider";
 
 type AuthedRequest = Request & {
   authUser?: SessionUser;
@@ -21,6 +21,27 @@ type AuthedRequest = Request & {
 
 function unauthorized(res: Response) {
   return res.status(401).json({ error: "Unauthenticated" });
+}
+
+function authProviderErrorStatus(error: AuthProviderError) {
+  switch (error.code) {
+    case "invalid_credentials":
+    case "inactive_account":
+      return 401;
+    case "email_exists":
+      return 409;
+    case "not_implemented":
+      return 501;
+    default:
+      return 500;
+  }
+}
+
+function sendAuthProviderError(res: Response, error: AuthProviderError) {
+  return res.status(authProviderErrorStatus(error)).json({
+    error: error.message,
+    code: error.code
+  });
 }
 
 async function createSession(user: SessionUser, refreshStore: RefreshStore): Promise<AuthSession> {
@@ -77,6 +98,10 @@ export function createMobileAuthRouter(authProvider: AuthProvider) {
 
       return res.json(await createSession(user, refreshStore));
     } catch (error) {
+      if (error instanceof AuthProviderError) {
+        return sendAuthProviderError(res, error);
+      }
+
       return res.status(400).json({ error: error instanceof Error ? error.message : "Invalid login request" });
     }
   });
@@ -87,6 +112,10 @@ export function createMobileAuthRouter(authProvider: AuthProvider) {
       const user = await authProvider.register(payload);
       return res.status(201).json(await createSession(user, refreshStore));
     } catch (error) {
+      if (error instanceof AuthProviderError) {
+        return sendAuthProviderError(res, error);
+      }
+
       return res.status(400).json({ error: error instanceof Error ? error.message : "Invalid register request" });
     }
   });
@@ -139,4 +168,3 @@ export function createMobileAuthRouter(authProvider: AuthProvider) {
 
   return router;
 }
-

@@ -1,7 +1,7 @@
 import * as SecureStore from "expo-secure-store";
-import { MMKV } from "react-native-mmkv";
+import { createMMKV } from "react-native-mmkv";
 
-export const mmkv = new MMKV({
+export const mmkv = createMMKV({
   id: "boxandbuy-mobile"
 });
 
@@ -25,7 +25,6 @@ export const zustandStorage = {
     mmkv.set(key, value);
   },
   removeItem(key: string) {
-    mmkv.delete(key);
+    mmkv.remove(key);
   }
 };
-
