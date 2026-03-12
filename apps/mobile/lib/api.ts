@@ -1,11 +1,16 @@
 import type {
   AddressInput,
   AuthSession,
+  BusinessActionResponse,
+  BusinessApplicationInput,
+  BusinessOverview,
   CatalogHomeResponse,
   CheckoutSession,
   CartAddressSelection,
   CartResponse,
   CountriesResponse,
+  GuestBusinessApplicationInput,
+  GuestBusinessApplicationResponse,
   StatesResponse,
   LoginPayload,
   LogoutPayload,
@@ -95,6 +100,27 @@ export const api = {
   },
   getCart() {
     return request<CartResponse>("/api/mobile/cart");
+  },
+  getBusinessOverview() {
+    return request<BusinessOverview>("/api/mobile/business/overview");
+  },
+  submitBusinessApplication(payload: BusinessApplicationInput) {
+    return request<BusinessActionResponse>("/api/mobile/business/application", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+  },
+  submitTermsApplication(payload: { requestedTermsDays: 15 | 30; customerNote?: string }) {
+    return request<BusinessActionResponse>("/api/mobile/business/terms", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+  },
+  submitGuestBusinessApplication(payload: GuestBusinessApplicationInput) {
+    return request<GuestBusinessApplicationResponse>("/api/mobile/business/guest-application", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }, false);
   },
   getCheckoutSession() {
     return request<CheckoutSession>("/api/mobile/checkout/session");
