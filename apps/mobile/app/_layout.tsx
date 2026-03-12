@@ -37,6 +37,7 @@ export default function RootLayout() {
           <Stack.Screen name="product/[id]" options={{ title: "Product" }} />
           <Stack.Screen name="cart/checkout" options={{ title: "Checkout" }} />
           <Stack.Screen name="orders/[id]" options={{ title: "Order" }} />
+          <Stack.Screen name="rfqs/[id]" options={{ title: "RFQ" }} />
         </Stack>
       </QueryClientProvider>
     </Providers>

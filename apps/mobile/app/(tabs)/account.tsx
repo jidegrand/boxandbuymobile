@@ -8,6 +8,7 @@ import { Link, router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Pressable, Text, TextInput, View } from "react-native";
 
+import { RfqStatusBadge } from "../../components/rfqs/status-badge";
 import { Screen } from "../../components/ui/screen";
 import { SectionCard } from "../../components/ui/section-card";
 import {
@@ -16,8 +17,9 @@ import {
   useSubmitGuestBusinessApplication,
   useSubmitTermsApplication
 } from "../../hooks/use-business";
+import { useRfqs } from "../../hooks/use-rfqs";
 import { useSession } from "../../hooks/use-session";
-import { formatDateTime, formatStatusLabel } from "../../lib/format";
+import { formatCurrency, formatDateTime, formatStatusLabel } from "../../lib/format";
 import { api } from "../../lib/api";
 import { queryClient } from "../../lib/query-client";
 import { useAuthStore } from "../../store/auth.store";
@@ -86,6 +88,7 @@ export default function AccountScreen() {
   const hydrated = useAuthStore((state) => state.hydrated);
   const accessToken = useAuthStore((state) => state.accessToken);
   const businessOverview = useBusinessOverview();
+  const rfqs = useRfqs();
   const submitBusinessApplication = useSubmitBusinessApplication();
   const submitTermsApplication = useSubmitTermsApplication();
   const submitGuestBusinessApplication = useSubmitGuestBusinessApplication();
@@ -133,6 +136,7 @@ export default function AccountScreen() {
     await api.logout();
     await queryClient.removeQueries({ queryKey: ["session"] });
     await queryClient.removeQueries({ queryKey: ["business"] });
+    await queryClient.removeQueries({ queryKey: ["rfqs"] });
     router.replace("/(auth)/login");
   };
 
@@ -497,6 +501,44 @@ export default function AccountScreen() {
                 )}
               </>
             ) : null}
+          </SectionCard>
+
+          <SectionCard title="Quote History">
+            {rfqs.isLoading ? <Text className="text-sm text-muted">Loading quote history...</Text> : null}
+            {rfqs.isError ? (
+              <Text className="text-sm text-red-600">
+                {rfqs.error instanceof Error ? rfqs.error.message : "Unable to load your quote history right now."}
+              </Text>
+            ) : null}
+            {rfqs.data?.length ? (
+              <View className="gap-3">
+                {rfqs.data.map((rfq) => (
+                  <Link
+                    key={rfq.id}
+                    href={`/rfqs/${rfq.id}`}
+                    className="rounded-2xl border border-ink/10 px-4 py-4"
+                  >
+                    <View className="gap-2">
+                      <RfqStatusBadge status={rfq.status} />
+                      <Text className="font-semibold text-ink">{rfq.reference}</Text>
+                      <Text className="text-sm text-muted">
+                        Submitted {formatDateTime(rfq.submittedAt)}
+                      </Text>
+                      <Text className="text-sm text-muted">
+                        {rfq.itemCount} item{rfq.itemCount === 1 ? "" : "s"} · {formatCurrency(rfq.totalAmount, rfq.currencyCode)}
+                      </Text>
+                      {rfq.quoteExpiresAt ? (
+                        <Text className="text-sm text-muted">
+                          Quote expires {formatDateTime(rfq.quoteExpiresAt)}
+                        </Text>
+                      ) : null}
+                    </View>
+                  </Link>
+                ))}
+              </View>
+            ) : rfqs.isLoading || rfqs.isError ? null : (
+              <Text className="text-sm text-muted">No RFQs have been submitted from this account yet.</Text>
+            )}
           </SectionCard>
         </>
       )}

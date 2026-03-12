@@ -1,11 +1,14 @@
 import type { AddressInput } from "@boxandbuy/contracts";
 
 import { Link } from "expo-router";
-import { Alert, Pressable, Text, View } from "react-native";
+import { useState } from "react";
+import { Alert, Pressable, Text, TextInput, View } from "react-native";
 
 import { AddressForm } from "../../components/cart/address-form";
+import { RfqStatusBadge } from "../../components/rfqs/status-badge";
 import { Screen } from "../../components/ui/screen";
 import { SectionCard } from "../../components/ui/section-card";
+import { useBusinessOverview } from "../../hooks/use-business";
 import {
   useCart,
   useCountries,
@@ -16,7 +19,8 @@ import {
   useUpdateAddress,
   useUpdateCartItem
 } from "../../hooks/use-cart";
-import { formatCurrency } from "../../lib/format";
+import { useCurrentCartRfq, useSubmitRfq } from "../../hooks/use-rfqs";
+import { formatCurrency, formatDateTime } from "../../lib/format";
 import { useAuthStore } from "../../store/auth.store";
 import { useCartStore } from "../../store/cart.store";
 
@@ -36,6 +40,10 @@ export default function CartScreen() {
   const createAddress = useCreateAddress();
   const updateAddress = useUpdateAddress();
   const deleteAddress = useDeleteAddress();
+  const businessOverview = useBusinessOverview();
+  const currentCartRfq = useCurrentCartRfq();
+  const submitRfq = useSubmitRfq();
+  const [rfqNote, setRfqNote] = useState("");
   const editingAddress = cart.data?.addresses.find((address) => address.id === editingAddressId);
 
   const handleQuantityChange = async (productId: string, quantity: number) => {
@@ -96,6 +104,16 @@ export default function CartScreen() {
       closeAddressForm();
     } catch (error) {
       Alert.alert("Address save failed", error instanceof Error ? error.message : "Unable to save the address.");
+    }
+  };
+
+  const handleSubmitRfq = async () => {
+    try {
+      const response = await submitRfq.mutateAsync(rfqNote);
+      setRfqNote(response.rfq.customerNote ?? "");
+      Alert.alert("RFQ submitted", response.message);
+    } catch (error) {
+      Alert.alert("RFQ submission failed", error instanceof Error ? error.message : "Unable to submit this RFQ.");
     }
   };
 
@@ -281,7 +299,7 @@ export default function CartScreen() {
       <SectionCard title="Checkout">
         {cart.data?.cart.checkoutReady ? (
           <Text className="text-sm text-muted">
-            Delivery and invoice addresses are selected. Sprint 5 will connect this to checkout orchestration.
+            Delivery and invoice addresses are selected. Checkout can continue in the secure web handoff.
           </Text>
         ) : (
           <Text className="text-sm text-muted">
@@ -291,6 +309,93 @@ export default function CartScreen() {
         <Link href="/cart/checkout" className="rounded-xl bg-ink px-4 py-3 text-center text-white">
           Continue to checkout
         </Link>
+      </SectionCard>
+
+      <SectionCard title="Request for Quote">
+        {businessOverview.isLoading || currentCartRfq.isLoading ? (
+          <Text className="text-sm text-muted">Loading RFQ availability...</Text>
+        ) : null}
+
+        {businessOverview.isError ? (
+          <Text className="text-sm text-red-600">
+            {businessOverview.error instanceof Error
+              ? businessOverview.error.message
+              : "Unable to load your Business status right now."}
+          </Text>
+        ) : null}
+
+        {currentCartRfq.isError ? (
+          <Text className="text-sm text-red-600">
+            {currentCartRfq.error instanceof Error
+              ? currentCartRfq.error.message
+              : "Unable to load the RFQ status for this cart."}
+          </Text>
+        ) : null}
+
+        {!businessOverview.isLoading && !businessOverview.isError && businessOverview.data ? (
+          <>
+            {!businessOverview.data.accountActive ? (
+              <Text className="text-sm text-red-600">
+                Your customer account is inactive. RFQ submission is paused until support re-enables access.
+              </Text>
+            ) : !businessOverview.data.isBusinessCustomer ? (
+              <Text className="text-sm leading-6 text-muted">
+                RFQ submission requires an approved Business customer account. Apply from the Account tab first.
+              </Text>
+            ) : currentCartRfq.data ? (
+              <View className="gap-3">
+                <RfqStatusBadge status={currentCartRfq.data.status} />
+                <Text className="text-sm text-muted">Reference: {currentCartRfq.data.reference}</Text>
+                <Text className="text-sm text-muted">
+                  Submitted {formatDateTime(currentCartRfq.data.submittedAt)}
+                </Text>
+                {currentCartRfq.data.quoteExpiresAt ? (
+                  <Text className="text-sm text-muted">
+                    Quote expires {formatDateTime(currentCartRfq.data.quoteExpiresAt)}
+                  </Text>
+                ) : null}
+                <Text className="text-sm font-semibold text-ink">
+                  Total: {formatCurrency(currentCartRfq.data.totalAmount, currentCartRfq.data.currencyCode)}
+                </Text>
+                <Link
+                  href={`/rfqs/${currentCartRfq.data.id}`}
+                  className="rounded-xl bg-accent px-4 py-3 text-center text-white"
+                >
+                  View RFQ details
+                </Link>
+              </View>
+            ) : cart.data?.cart.items.length ? (
+              <View className="gap-3">
+                <Text className="text-sm leading-6 text-muted">
+                  Submit the current cart for quote review. Approved quotes can later be downloaded or converted into checkout.
+                </Text>
+                <TextInput
+                  value={rfqNote}
+                  onChangeText={setRfqNote}
+                  placeholder="Optional buying notes, target quantities, or delivery expectations."
+                  multiline
+                  textAlignVertical="top"
+                  className="min-h-[104px] rounded-xl border border-ink/10 px-4 py-3"
+                />
+                <Pressable
+                  className={`rounded-xl px-4 py-3 ${submitRfq.isPending ? "bg-accent/60" : "bg-accent"}`}
+                  disabled={submitRfq.isPending}
+                  onPress={() => {
+                    void handleSubmitRfq();
+                  }}
+                >
+                  <Text className="text-center font-semibold text-white">
+                    {submitRfq.isPending ? "Submitting..." : "Submit RFQ from cart"}
+                  </Text>
+                </Pressable>
+              </View>
+            ) : (
+              <Text className="text-sm text-muted">
+                Add products to the cart before starting an RFQ.
+              </Text>
+            )}
+          </>
+        ) : null}
       </SectionCard>
     </Screen>
   );

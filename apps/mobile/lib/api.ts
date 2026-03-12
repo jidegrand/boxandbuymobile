@@ -6,6 +6,7 @@ import type {
   BusinessOverview,
   CatalogHomeResponse,
   CheckoutSession,
+  CurrentCartRfqResponse,
   CartAddressSelection,
   CartResponse,
   CountriesResponse,
@@ -21,6 +22,9 @@ import type {
   ProductDetail,
   ProductListQuery,
   RefreshPayload,
+  RfqDetail,
+  RfqListResponse,
+  SubmitRfqResponse,
   RegisterPayload
 } from "@boxandbuy/contracts";
 
@@ -100,6 +104,23 @@ export const api = {
   },
   getCart() {
     return request<CartResponse>("/api/mobile/cart");
+  },
+  async getRfqs() {
+    const response = await request<RfqListResponse>("/api/mobile/rfqs");
+    return response.items;
+  },
+  async getCurrentCartRfq() {
+    const response = await request<CurrentCartRfqResponse>("/api/mobile/rfqs/current-cart");
+    return response.rfq;
+  },
+  getRfqDetail(rfqId: string) {
+    return request<RfqDetail>(`/api/mobile/rfqs/${rfqId}`);
+  },
+  submitRfq(customerNote?: string) {
+    return request<SubmitRfqResponse>("/api/mobile/rfqs", {
+      method: "POST",
+      body: JSON.stringify({ customerNote })
+    });
   },
   getBusinessOverview() {
     return request<BusinessOverview>("/api/mobile/business/overview");
