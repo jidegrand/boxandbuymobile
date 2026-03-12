@@ -1,0 +1,62 @@
+Phase,Sprint,Task,Owner,Dependency,Validation,Status
+Architecture Lock,Sprint 0,Confirm v1 scope as buyer plus B2B,Product,None,Signed scope document,Planned
+Architecture Lock,Sprint 0,Freeze mobile backend rule to API or BFF only,Architecture,None,Written architecture decision,Planned
+Architecture Lock,Sprint 0,Freeze auth strategy for buyer and B2B APIs,Architecture,None,Approved auth decision,Planned
+Architecture Lock,Sprint 0,Freeze checkout strategy for v1,Product,None,Approved checkout decision,Planned
+Architecture Lock,Sprint 0,Define screen inventory and endpoint inventory,Product,Approved scope,Backlog reviewed and signed,Planned
+Architecture Lock,Sprint 0,Assign owners and approval workflow,Product,Approved scope,Owner map published,Planned
+Workspace,Sprint 1,Add apps/mobile to npm workspaces,Mobile,Approved architecture,Workspace install succeeds,Planned
+Workspace,Sprint 1,Create packages/contracts for shared schemas,Backend,Workspace updated,Shared package imports cleanly,Planned
+Workspace,Sprint 1,Scaffold Expo app with core libraries,Mobile,Workspace updated,App boots in dev build,Planned
+Workspace,Sprint 1,Add root providers and route groups,Mobile,Expo scaffold complete,Navigation boot test passes,Planned
+Workspace,Sprint 1,Add API client env handling and auth guard,Mobile,Providers in place,Session bootstrap works,Planned
+Workspace,Sprint 1,Configure EAS profiles and development builds,Infra,Expo scaffold complete,IOS and Android dev builds run,Planned
+Auth Foundation,Sprint 2,Create buyer mobile auth endpoints,Backend,Architecture lock,Login endpoint passes smoke test,Planned
+Auth Foundation,Sprint 2,Add refresh token and revoke flow,Backend,Auth endpoints exist,Refresh and logout tests pass,Planned
+Auth Foundation,Sprint 2,Add me endpoint and session bootstrap,Backend,Auth endpoints exist,Authenticated bootstrap works,Planned
+Auth Foundation,Sprint 2,Add auth store and secure token handling,Mobile,Auth endpoints exist,Session survives restart,Planned
+Auth Foundation,Sprint 2,Add request logging and rate limits,Backend,Auth endpoints exist,Logs and throttling verified,Planned
+Catalog,Sprint 3,Add home feed and category endpoints,Backend,Auth foundation complete,Category and feed responses match contract,Planned
+Catalog,Sprint 3,Add search and filter endpoints,Backend,Catalog endpoints started,Search returns expected result sets,Planned
+Catalog,Sprint 3,Add product detail and seller summary endpoints,Backend,Catalog endpoints started,Product payload validated,Planned
+Catalog,Sprint 3,Build home screen,Mobile,Catalog endpoints available,Home screen render check passes,Planned
+Catalog,Sprint 3,Build shop screen with filters and pagination,Mobile,Search endpoints available,Filter and pagination checks pass,Planned
+Catalog,Sprint 3,Build product detail screen,Mobile,Product detail endpoint available,Price stock and media checks pass,Planned
+Cart,Sprint 4,Add cart read and write endpoints,Backend,Catalog complete,Cart payload matches expected totals,Planned
+Cart,Sprint 4,Add cart merge behavior for guest to signed user,Backend,Cart endpoints available,Merge rules verified,Planned
+Cart,Sprint 4,Add address CRUD endpoints,Backend,Auth foundation complete,Address validation passes,Planned
+Cart,Sprint 4,Build cart screen and line item controls,Mobile,Cart endpoints available,Quantity and remove checks pass,Planned
+Cart,Sprint 4,Build address selection and edit flow,Mobile,Address endpoints available,Address selection updates cart,Planned
+Checkout,Sprint 5,Create checkout orchestration endpoint,Backend,Cart complete,Checkout session created successfully,Planned
+Checkout,Sprint 5,Implement hosted or web checkout fallback,Backend,Checkout orchestration exists,Checkout fallback works on device,Planned
+Checkout,Sprint 5,Add orders list and detail endpoints,Backend,Checkout orchestration exists,Order payload contract validated,Planned
+Checkout,Sprint 5,Build order history screen,Mobile,Orders endpoints available,Order history renders correctly,Planned
+Checkout,Sprint 5,Build order detail screen,Mobile,Order detail endpoint available,Invoice and tracking checks pass,Planned
+Checkout,Sprint 5,Handle failed and abandoned checkout recovery,Mobile,Checkout flow available,Recovery path verified,Planned
+B2B,Sprint 6,Expose business application status endpoint,Backend,Auth foundation complete,Current status returned correctly,Planned
+B2B,Sprint 6,Expose guest business application submission endpoint,Backend,B2B status endpoint available,Guest apply flow passes,Planned
+B2B,Sprint 6,Expose signed-in business application submission endpoint,Backend,B2B status endpoint available,Signed apply flow passes,Planned
+B2B,Sprint 6,Expose terms application status and submit endpoints,Backend,B2B status endpoint available,Terms flow passes,Planned
+B2B,Sprint 6,Build business application mobile screen,Mobile,B2B endpoints available,Application UX reviewed,Planned
+B2B,Sprint 6,Build terms request mobile screen,Mobile,Terms endpoints available,Terms UX reviewed,Planned
+RFQ,Sprint 7,Expose submit RFQ from cart endpoint,Backend,Cart complete,RFQ created successfully,Planned
+RFQ,Sprint 7,Expose RFQ history and detail endpoints,Backend,RFQ create endpoint available,RFQ list matches server state,Planned
+RFQ,Sprint 7,Expose quote PDF and private checkout handoff endpoints,Backend,RFQ detail endpoint available,Quote and handoff verified,Planned
+RFQ,Sprint 7,Build RFQ submission flow from cart,Mobile,RFQ create endpoint available,Submission works on device,Planned
+RFQ,Sprint 7,Build RFQ history and quote actions screens,Mobile,RFQ list endpoints available,History and actions verified,Planned
+RFQ,Sprint 7,Enforce expiry and ownership checks server-side,Backend,RFQ endpoints available,Unauthorized and expired paths blocked,Planned
+Seller Read Only,Sprint 8,Extend Growth auth for mobile-safe session use,Backend,Buyer foundation complete,Seller session bootstrap works,Planned
+Seller Read Only,Sprint 8,Map Growth endpoints for mobile read-only use,Backend,Seller auth available,Endpoint inventory approved,Planned
+Seller Read Only,Sprint 8,Build seller overview screen,Mobile,Growth mapping approved,Overview values match web,Planned
+Seller Read Only,Sprint 8,Build seller products campaigns and listings screens,Mobile,Relevant endpoints available,Read-only screens validated,Planned
+Seller Read Only,Sprint 8,Build seller affiliates trends and recommendations screens,Mobile,Relevant endpoints available,Read-only screens validated,Planned
+Seller Optional,Sprint 9,Define approved seller action scope,Product,Seller read-only complete,Scope sign-off recorded,Planned
+Seller Optional,Sprint 9,Add seller action APIs for approved scope,Backend,Approved seller action scope,Mutation tests pass,Planned
+Seller Optional,Sprint 9,Build mobile screens for approved seller actions,Mobile,Seller action APIs available,User flow demo passes,Planned
+Seller Optional,Sprint 9,Add audit logging and permissions checks,Backend,Seller action APIs available,Permissions and logs verified,Planned
+Hardening,Sprint 10,Add push notifications and deep linking,Mobile,Feature-complete app,Push and deep link smoke tests pass,Planned
+Hardening,Sprint 10,Add analytics and crash reporting,Mobile,Feature-complete app,Events and crash capture verified,Planned
+Hardening,Sprint 10,Run accessibility and performance pass,QA,Feature-complete app,Checklist passes agreed threshold,Planned
+Hardening,Sprint 10,Run security review for token and secret handling,Security,Feature-complete app,Security review signed,Planned
+Hardening,Sprint 10,Prepare store assets release notes and support runbook,Product,Feature-complete app,Release package complete,Planned
+Hardening,Sprint 10,Run real-device smoke tests on iOS and Android,QA,Release package complete,Smoke test report signed,Planned
