@@ -15,12 +15,15 @@ export function useSessionBootstrap() {
 
 export function useSession() {
   const hydrated = useAuthStore((state) => state.hydrated);
-  const token = useAuthStore((state) => state.token);
+  const accessToken = useAuthStore((state) => state.accessToken);
 
   return useQuery({
     queryKey: ["session"],
-    queryFn: api.getSession,
-    enabled: hydrated && Boolean(token)
+    queryFn: async () => {
+      const response = await api.getSession();
+      useAuthStore.getState().setUser(response.user);
+      return response;
+    },
+    enabled: hydrated && Boolean(accessToken)
   });
 }
-

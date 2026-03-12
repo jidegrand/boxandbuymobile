@@ -10,13 +10,13 @@
     "node": ">=20.0.0"
   },
   "scripts": {
+    "dev:api": "npm run dev --workspace @boxandbuy/mobile-api",
     "dev:mobile": "npm run dev --workspace @boxandbuy/mobile",
     "ios": "npm run ios --workspace @boxandbuy/mobile",
     "android": "npm run android --workspace @boxandbuy/mobile",
-    "typecheck": "npm run typecheck --workspace @boxandbuy/contracts && npm run typecheck --workspace @boxandbuy/mobile"
+    "typecheck": "npm run typecheck --workspace @boxandbuy/contracts && npm run typecheck --workspace @boxandbuy/mobile-api && npm run typecheck --workspace @boxandbuy/mobile"
   },
   "devDependencies": {
     "typescript": "^5.9.3"
   }
 }
-

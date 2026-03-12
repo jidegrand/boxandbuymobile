@@ -1,47 +1,69 @@
 import type { SessionUser } from "@boxandbuy/contracts";
+import type { AuthSession } from "@boxandbuy/contracts";
 
 import { create } from "zustand";
 
 import { secureStorage } from "../lib/storage";
 
-const TOKEN_KEY = "auth.token";
+const ACCESS_TOKEN_KEY = "auth.accessToken";
+const REFRESH_TOKEN_KEY = "auth.refreshToken";
 
 type AuthState = {
   hydrated: boolean;
-  token: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
   user: SessionUser | null;
   hydrate: () => Promise<void>;
-  setSession: (token: string, user: SessionUser) => Promise<void>;
+  setSession: (session: AuthSession) => Promise<void>;
+  setUser: (user: SessionUser | null) => void;
   clearSession: () => Promise<void>;
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
   hydrated: false,
-  token: null,
+  accessToken: null,
+  refreshToken: null,
   user: null,
   async hydrate() {
-    const token = await secureStorage.getItem(TOKEN_KEY);
+    const [accessToken, refreshToken] = await Promise.all([
+      secureStorage.getItem(ACCESS_TOKEN_KEY),
+      secureStorage.getItem(REFRESH_TOKEN_KEY)
+    ]);
+
     set({
       hydrated: true,
-      token,
+      accessToken,
+      refreshToken,
       user: null
     });
   },
-  async setSession(token, user) {
-    await secureStorage.setItem(TOKEN_KEY, token);
+  async setSession(session) {
+    await Promise.all([
+      secureStorage.setItem(ACCESS_TOKEN_KEY, session.tokens.accessToken),
+      secureStorage.setItem(REFRESH_TOKEN_KEY, session.tokens.refreshToken)
+    ]);
+
     set({
       hydrated: true,
-      token,
-      user
+      accessToken: session.tokens.accessToken,
+      refreshToken: session.tokens.refreshToken,
+      user: session.user
     });
   },
+  setUser(user) {
+    set({ user });
+  },
   async clearSession() {
-    await secureStorage.removeItem(TOKEN_KEY);
+    await Promise.all([
+      secureStorage.removeItem(ACCESS_TOKEN_KEY),
+      secureStorage.removeItem(REFRESH_TOKEN_KEY)
+    ]);
+
     set({
       hydrated: true,
-      token: null,
+      accessToken: null,
+      refreshToken: null,
       user: null
     });
   }
 }));
-
