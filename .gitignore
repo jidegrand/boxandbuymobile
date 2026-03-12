@@ -1,0 +1,13 @@
+node_modules/
+.npm/
+.expo/
+.expo-shared/
+dist/
+coverage/
+*.log
+.DS_Store
+apps/mobile/.env
+apps/mobile/.env.local
+apps/mobile/ios/
+apps/mobile/android/
+

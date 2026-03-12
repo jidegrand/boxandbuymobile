@@ -1,0 +1,22 @@
+{
+  "name": "boxandbuy-mobile",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev:mobile": "npm run dev --workspace @boxandbuy/mobile",
+    "ios": "npm run ios --workspace @boxandbuy/mobile",
+    "android": "npm run android --workspace @boxandbuy/mobile",
+    "typecheck": "npm run typecheck --workspace @boxandbuy/contracts && npm run typecheck --workspace @boxandbuy/mobile"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
+
