@@ -2,6 +2,7 @@ import type {
   AddressInput,
   AuthSession,
   CatalogHomeResponse,
+  CheckoutSession,
   CartAddressSelection,
   CartResponse,
   CountriesResponse,
@@ -9,6 +10,8 @@ import type {
   LoginPayload,
   LogoutPayload,
   MeResponse,
+  OrderDetail,
+  OrdersResponse,
   PaginatedProducts,
   ProductDetail,
   ProductListQuery,
@@ -93,6 +96,9 @@ export const api = {
   getCart() {
     return request<CartResponse>("/api/mobile/cart");
   },
+  getCheckoutSession() {
+    return request<CheckoutSession>("/api/mobile/checkout/session");
+  },
   updateCartItem(productId: string, quantity: number) {
     return request<CartResponse>(`/api/mobile/cart/items/${productId}`, {
       method: "PATCH",
@@ -134,6 +140,13 @@ export const api = {
   async getStates(countryId: string) {
     const response = await request<StatesResponse>(`/api/mobile/locations/countries/${countryId}/states`, {}, false);
     return response.states;
+  },
+  async getOrders() {
+    const response = await request<OrdersResponse>("/api/mobile/orders");
+    return response.orders;
+  },
+  getOrderDetail(orderId: string) {
+    return request<OrderDetail>(`/api/mobile/orders/${orderId}`);
   },
   getCatalogHome() {
     return request<CatalogHomeResponse>("/api/mobile/catalog/home", {}, false);
