@@ -1,5 +1,5 @@
 import type { AuthSession } from "@boxandbuy/contracts";
-import type { Request, Response, NextFunction } from "express";
+import type { Response } from "express";
 
 import {
   loginPayloadSchema,
@@ -10,18 +10,11 @@ import {
 } from "@boxandbuy/contracts";
 import express from "express";
 
-import { issueAccessToken, verifyAccessToken } from "../auth/access-token";
+import { issueAccessToken } from "../auth/access-token";
 import { RefreshStore } from "../auth/refresh-store";
 import { env } from "../env";
+import { createAuthMiddleware, type AuthedRequest, unauthorized } from "./auth-middleware";
 import { AuthProviderError, type AuthProvider } from "../services/auth-provider";
-
-type AuthedRequest = Request & {
-  authUser?: SessionUser;
-};
-
-function unauthorized(res: Response) {
-  return res.status(401).json({ error: "Unauthenticated" });
-}
 
 function authProviderErrorStatus(error: AuthProviderError) {
   switch (error.code) {
@@ -58,34 +51,10 @@ async function createSession(user: SessionUser, refreshStore: RefreshStore): Pro
   };
 }
 
-function authMiddleware(authProvider: AuthProvider) {
-  return async function authHandler(req: AuthedRequest, res: Response, next: NextFunction) {
-    const header = req.headers.authorization ?? "";
-    const token = header.startsWith("Bearer ") ? header.slice("Bearer ".length) : "";
-
-    if (!token) {
-      return unauthorized(res);
-    }
-
-    try {
-      const claims = await verifyAccessToken(token);
-      const user = await authProvider.getUserById(claims.userId);
-
-      if (!user) {
-        return unauthorized(res);
-      }
-
-      req.authUser = user;
-      return next();
-    } catch {
-      return unauthorized(res);
-    }
-  };
-}
-
 export function createMobileAuthRouter(authProvider: AuthProvider) {
   const router = express.Router();
   const refreshStore = new RefreshStore(env.refreshTokenTtlSeconds);
+  const authMiddleware = createAuthMiddleware(authProvider);
 
   router.post("/login", async (req, res) => {
     try {
@@ -160,7 +129,7 @@ export function createMobileAuthRouter(authProvider: AuthProvider) {
     }
   });
 
-  router.get("/me", authMiddleware(authProvider), async (req: AuthedRequest, res) => {
+  router.get("/me", authMiddleware, async (req: AuthedRequest, res) => {
     return res.json({
       user: req.authUser
     });

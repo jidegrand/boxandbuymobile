@@ -20,6 +20,8 @@ export type PrestashopContextValues = {
   defaultShopGroupId: number;
   defaultLanguageId: number;
   defaultCustomerGroupId: number;
+  defaultCurrencyId: number;
+  defaultCountryId: number;
   passwordCooldownMinutes: number;
   currencyCode: string;
   homeCategoryId: number;
@@ -67,6 +69,7 @@ export async function getPrestashopContext() {
             'PS_SHOP_DEFAULT',
             'PS_PASSWD_TIME_FRONT',
             'PS_CURRENCY_DEFAULT',
+            'PS_COUNTRY_DEFAULT',
             'PS_HOME_CATEGORY',
             'PS_ORDER_OUT_OF_STOCK'
           )
@@ -82,6 +85,7 @@ export async function getPrestashopContext() {
       const defaultCustomerGroupId = Number.parseInt(configuration.get("PS_CUSTOMER_GROUP") ?? "3", 10) || 3;
       const passwordCooldownMinutes = Number.parseInt(configuration.get("PS_PASSWD_TIME_FRONT") ?? "0", 10) || 0;
       const defaultCurrencyId = Number.parseInt(configuration.get("PS_CURRENCY_DEFAULT") ?? "1", 10) || 1;
+      const defaultCountryId = Number.parseInt(configuration.get("PS_COUNTRY_DEFAULT") ?? "21", 10) || 21;
       const homeCategoryId = Number.parseInt(configuration.get("PS_HOME_CATEGORY") ?? "2", 10) || 2;
       const allowOutOfStockOrders = configuration.get("PS_ORDER_OUT_OF_STOCK") === "1";
 
@@ -109,14 +113,16 @@ export async function getPrestashopContext() {
       const defaultShopGroupId = Number.parseInt(String(shopRow[0]?.id_shop_group ?? "1"), 10) || 1;
       const currencyCode = typeof currencyRow[0]?.iso_code === "string" ? currencyRow[0].iso_code : "USD";
 
-      return {
-        defaultShopId,
-        defaultShopGroupId,
-        defaultLanguageId,
-        defaultCustomerGroupId,
-        passwordCooldownMinutes,
-        currencyCode,
-        homeCategoryId,
+        return {
+          defaultShopId,
+          defaultShopGroupId,
+          defaultLanguageId,
+          defaultCustomerGroupId,
+          defaultCurrencyId,
+          defaultCountryId,
+          passwordCooldownMinutes,
+          currencyCode,
+          homeCategoryId,
         allowOutOfStockOrders
       };
     })();

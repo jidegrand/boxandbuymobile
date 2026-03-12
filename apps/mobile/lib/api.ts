@@ -1,6 +1,11 @@
 import type {
+  AddressInput,
   AuthSession,
   CatalogHomeResponse,
+  CartAddressSelection,
+  CartResponse,
+  CountriesResponse,
+  StatesResponse,
   LoginPayload,
   LogoutPayload,
   MeResponse,
@@ -79,6 +84,57 @@ async function request<T>(path: string, options: RequestOptions = {}, retry = tr
 }
 
 export const api = {
+  addCartItem(productId: string, quantity = 1) {
+    return request<CartResponse>("/api/mobile/cart/items", {
+      method: "POST",
+      body: JSON.stringify({ productId, quantity })
+    });
+  },
+  getCart() {
+    return request<CartResponse>("/api/mobile/cart");
+  },
+  updateCartItem(productId: string, quantity: number) {
+    return request<CartResponse>(`/api/mobile/cart/items/${productId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ quantity })
+    });
+  },
+  removeCartItem(productId: string) {
+    return request<CartResponse>(`/api/mobile/cart/items/${productId}`, {
+      method: "DELETE"
+    });
+  },
+  selectCartAddresses(payload: CartAddressSelection) {
+    return request<CartResponse>("/api/mobile/cart/addresses/selection", {
+      method: "PUT",
+      body: JSON.stringify(payload)
+    });
+  },
+  createAddress(payload: AddressInput) {
+    return request<CartResponse>("/api/mobile/cart/addresses", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+  },
+  updateAddress(addressId: string, payload: AddressInput) {
+    return request<CartResponse>(`/api/mobile/cart/addresses/${addressId}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload)
+    });
+  },
+  deleteAddress(addressId: string) {
+    return request<CartResponse>(`/api/mobile/cart/addresses/${addressId}`, {
+      method: "DELETE"
+    });
+  },
+  async getCountries() {
+    const response = await request<CountriesResponse>("/api/mobile/locations/countries", {}, false);
+    return response.countries;
+  },
+  async getStates(countryId: string) {
+    const response = await request<StatesResponse>(`/api/mobile/locations/countries/${countryId}/states`, {}, false);
+    return response.states;
+  },
   getCatalogHome() {
     return request<CatalogHomeResponse>("/api/mobile/catalog/home", {}, false);
   },

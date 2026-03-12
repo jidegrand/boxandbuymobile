@@ -1,10 +1,12 @@
 import { Link, useLocalSearchParams } from "expo-router";
-import { Image, Text, View } from "react-native";
+import { Alert, Image, Pressable, Text, View } from "react-native";
 
 import { Screen } from "../../components/ui/screen";
 import { SectionCard } from "../../components/ui/section-card";
+import { useAddCartItem } from "../../hooks/use-cart";
 import { useProductDetail } from "../../hooks/use-catalog";
 import { formatCurrency } from "../../lib/format";
+import { useAuthStore } from "../../store/auth.store";
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -12,6 +14,24 @@ export default function ProductDetailScreen() {
   const detail = product.data;
   const primaryImageUrl = detail?.imageUrls[0] ?? detail?.imageUrl;
   const sellerLabel = detail?.seller?.shopName ?? detail?.seller?.name;
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const addCartItem = useAddCartItem();
+
+  const handleAddToCart = async () => {
+    if (!detail) {
+      return;
+    }
+
+    try {
+      await addCartItem.mutateAsync({
+        productId: detail.id,
+        quantity: 1
+      });
+      Alert.alert("Added to cart", "The product is now in your synced mobile cart.");
+    } catch (error) {
+      Alert.alert("Cart error", error instanceof Error ? error.message : "Unable to add this product to the cart.");
+    }
+  };
 
   return (
     <Screen title={detail?.name ?? "Product detail"} subtitle={detail?.category?.name ?? `Product ${id ?? "unknown"}`}>
@@ -75,6 +95,23 @@ export default function ProductDetailScreen() {
       </SectionCard>
 
       <SectionCard title="Next">
+        {accessToken ? (
+          <Pressable
+            className={detail?.inStock ? "rounded-xl bg-accent px-4 py-3" : "rounded-xl bg-accent/50 px-4 py-3"}
+            onPress={() => {
+              void handleAddToCart();
+            }}
+            disabled={!detail?.inStock || addCartItem.isPending}
+          >
+            <Text className="text-center font-medium text-white">
+              {addCartItem.isPending ? "Adding..." : "Add to cart"}
+            </Text>
+          </Pressable>
+        ) : (
+          <Link href="/(auth)/login" className="rounded-xl bg-accent px-4 py-3 text-center text-white">
+            Sign in to add to cart
+          </Link>
+        )}
         <Link href="/(tabs)/shop" className="rounded-xl border border-ink/10 px-4 py-3 text-center text-ink">
           Back to catalog
         </Link>
