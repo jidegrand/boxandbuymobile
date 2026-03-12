@@ -1,0 +1,16 @@
+[Unit]
+Description=BoxAndBuy Mobile API
+After=network.target mysql.service
+
+[Service]
+Type=simple
+WorkingDirectory=/var/www/mobiledev/apps/api
+EnvironmentFile=/etc/boxandbuy-mobile-api.env
+ExecStart=/usr/bin/node --import /var/www/mobiledev/node_modules/tsx/dist/loader.mjs /var/www/mobiledev/apps/api/src/server.ts
+Restart=always
+RestartSec=5
+User=root
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

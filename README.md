@@ -19,7 +19,8 @@ documentation.
 
 ## Next implementation steps
 
-1. Populate `apps/mobile/.env` from `apps/mobile/.env.example`.
-2. Create an EAS project and set `EXPO_PUBLIC_EAS_PROJECT_ID`.
-3. Produce a preview development build with `eas build --profile preview`.
-4. Run the release checklist in `documentation/mobile-release-checklist.md`.
+1. Deploy the mobile API to `https://boxandbuy.com/mobile-api` using `documentation/mobile-api-deployment.md`.
+2. Populate `apps/mobile/.env` from `apps/mobile/.env.example`.
+3. Create an EAS project and set `EXPO_PUBLIC_EAS_PROJECT_ID`.
+4. Produce a preview development build with `eas build --profile preview`.
+5. Run the release checklist in `documentation/mobile-release-checklist.md`.
