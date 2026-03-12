@@ -9,6 +9,7 @@ Files:
 - `mobile-release-hardening.md`: Sprint 10 hardening work completed in code.
 - `mobile-release-checklist.md`: release configuration and smoke-test checklist.
 - `mobile-api-deployment.md`: deployment path for `https://boxandbuy.com/mobile-api`.
+- `eas-account-setup.md`: exact Expo login, project-link, and first build commands.
 
 Planning assumptions:
 - V1 scope is `buyer + B2B`.
