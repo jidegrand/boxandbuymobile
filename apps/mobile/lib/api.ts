@@ -24,6 +24,14 @@ import type {
   RefreshPayload,
   RfqDetail,
   RfqListResponse,
+  SellerAffiliatesResponse,
+  SellerCampaignsResponse,
+  SellerContextResponse,
+  SellerDashboardResponse,
+  SellerFilterQuery,
+  SellerListingsResponse,
+  SellerProductsResponse,
+  SellerTrendsResponse,
   SubmitRfqResponse,
   RegisterPayload
 } from "@boxandbuy/contracts";
@@ -95,6 +103,19 @@ async function request<T>(path: string, options: RequestOptions = {}, retry = tr
   return response.json() as Promise<T>;
 }
 
+function buildQuery(params: Record<string, string | undefined>) {
+  const searchParams = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(params)) {
+    if (value) {
+      searchParams.set(key, value);
+    }
+  }
+
+  const query = searchParams.toString();
+  return query ? `?${query}` : "";
+}
+
 export const api = {
   addCartItem(productId: string, quantity = 1) {
     return request<CartResponse>("/api/mobile/cart/items", {
@@ -124,6 +145,68 @@ export const api = {
   },
   getBusinessOverview() {
     return request<BusinessOverview>("/api/mobile/business/overview");
+  },
+  getSellerContext() {
+    return request<SellerContextResponse>("/api/mobile/seller/context");
+  },
+  getSellerDashboard(filters: SellerFilterQuery = {}) {
+    return request<SellerDashboardResponse>(
+      `/api/mobile/seller/dashboard${buildQuery({
+        from: filters.from,
+        to: filters.to,
+        storeId: filters.storeId
+      })}`
+    );
+  },
+  async getSellerProducts(filters: SellerFilterQuery = {}) {
+    const response = await request<SellerProductsResponse>(
+      `/api/mobile/seller/products${buildQuery({
+        from: filters.from,
+        to: filters.to,
+        storeId: filters.storeId
+      })}`
+    );
+    return response.items;
+  },
+  async getSellerCampaigns(filters: SellerFilterQuery = {}) {
+    const response = await request<SellerCampaignsResponse>(
+      `/api/mobile/seller/campaigns${buildQuery({
+        from: filters.from,
+        to: filters.to,
+        storeId: filters.storeId
+      })}`
+    );
+    return response.items;
+  },
+  async getSellerListings(filters: SellerFilterQuery = {}) {
+    const response = await request<SellerListingsResponse>(
+      `/api/mobile/seller/listings${buildQuery({
+        from: filters.from,
+        to: filters.to,
+        storeId: filters.storeId
+      })}`
+    );
+    return response.items;
+  },
+  async getSellerAffiliates(filters: SellerFilterQuery = {}) {
+    const response = await request<SellerAffiliatesResponse>(
+      `/api/mobile/seller/affiliates${buildQuery({
+        from: filters.from,
+        to: filters.to,
+        storeId: filters.storeId
+      })}`
+    );
+    return response.items;
+  },
+  async getSellerTrends(filters: SellerFilterQuery = {}) {
+    const response = await request<SellerTrendsResponse>(
+      `/api/mobile/seller/trends${buildQuery({
+        from: filters.from,
+        to: filters.to,
+        storeId: filters.storeId
+      })}`
+    );
+    return response.items;
   },
   submitBusinessApplication(payload: BusinessApplicationInput) {
     return request<BusinessActionResponse>("/api/mobile/business/application", {
@@ -199,20 +282,16 @@ export const api = {
     return request<CatalogHomeResponse>("/api/mobile/catalog/home", {}, false);
   },
   listProducts(query: ProductListQuery) {
-    const params = new URLSearchParams();
-
-    if (query.search) {
-      params.set("search", query.search);
-    }
-
-    if (query.categoryId) {
-      params.set("categoryId", query.categoryId);
-    }
-
-    params.set("page", String(query.page));
-    params.set("pageSize", String(query.pageSize));
-
-    return request<PaginatedProducts>(`/api/mobile/catalog/products?${params.toString()}`, {}, false);
+    return request<PaginatedProducts>(
+      `/api/mobile/catalog/products${buildQuery({
+        search: query.search,
+        categoryId: query.categoryId,
+        page: String(query.page),
+        pageSize: String(query.pageSize)
+      })}`,
+      {},
+      false
+    );
   },
   getProductDetail(productId: string) {
     return request<ProductDetail>(`/api/mobile/catalog/products/${productId}`, {}, false);

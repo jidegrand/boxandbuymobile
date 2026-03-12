@@ -137,6 +137,7 @@ export default function AccountScreen() {
     await queryClient.removeQueries({ queryKey: ["session"] });
     await queryClient.removeQueries({ queryKey: ["business"] });
     await queryClient.removeQueries({ queryKey: ["rfqs"] });
+    await queryClient.removeQueries({ queryKey: ["seller"] });
     router.replace("/(auth)/login");
   };
 

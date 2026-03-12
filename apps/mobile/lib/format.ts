@@ -10,6 +10,10 @@ export function formatCurrency(amount: number, currencyCode: string) {
   }
 }
 
+export function formatPercent(value: number, maximumFractionDigits = 2) {
+  return `${Number(value).toFixed(maximumFractionDigits)}%`;
+}
+
 export function formatDateTime(value: string) {
   const normalized = value.includes("T") ? value : value.replace(" ", "T");
   const date = new Date(normalized);
