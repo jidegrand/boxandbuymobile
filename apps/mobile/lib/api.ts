@@ -1,8 +1,12 @@
 import type {
   AuthSession,
+  CatalogHomeResponse,
   LoginPayload,
   LogoutPayload,
   MeResponse,
+  PaginatedProducts,
+  ProductDetail,
+  ProductListQuery,
   RefreshPayload,
   RegisterPayload
 } from "@boxandbuy/contracts";
@@ -75,6 +79,28 @@ async function request<T>(path: string, options: RequestOptions = {}, retry = tr
 }
 
 export const api = {
+  getCatalogHome() {
+    return request<CatalogHomeResponse>("/api/mobile/catalog/home", {}, false);
+  },
+  listProducts(query: ProductListQuery) {
+    const params = new URLSearchParams();
+
+    if (query.search) {
+      params.set("search", query.search);
+    }
+
+    if (query.categoryId) {
+      params.set("categoryId", query.categoryId);
+    }
+
+    params.set("page", String(query.page));
+    params.set("pageSize", String(query.pageSize));
+
+    return request<PaginatedProducts>(`/api/mobile/catalog/products?${params.toString()}`, {}, false);
+  },
+  getProductDetail(productId: string) {
+    return request<ProductDetail>(`/api/mobile/catalog/products/${productId}`, {}, false);
+  },
   getSession() {
     return request<MeResponse>("/api/mobile/auth/me");
   },

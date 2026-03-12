@@ -2,7 +2,9 @@ import express from "express";
 
 import { env } from "./env";
 import { createMobileAuthRouter } from "./routes/mobile-auth";
+import { createMobileCatalogRouter } from "./routes/mobile-catalog";
 import type { AuthProvider } from "./services/auth-provider";
+import { PrestashopCatalogService } from "./services/prestashop-catalog-service";
 import { DemoAuthProvider } from "./services/demo-auth-provider";
 import { PrestashopAuthProvider } from "./services/prestashop-auth-provider";
 
@@ -17,6 +19,7 @@ function createAuthProvider(): AuthProvider {
 export function createApp() {
   const app = express();
   const authProvider = createAuthProvider();
+  const catalogService = new PrestashopCatalogService();
 
   app.disable("x-powered-by");
   app.use(express.json());
@@ -30,6 +33,7 @@ export function createApp() {
   });
 
   app.use("/api/mobile/auth", createMobileAuthRouter(authProvider));
+  app.use("/api/mobile/catalog", createMobileCatalogRouter(catalogService));
 
   app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
     const message = error instanceof Error ? error.message : "Unexpected error";
@@ -38,4 +42,3 @@ export function createApp() {
 
   return app;
 }
-

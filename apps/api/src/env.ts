@@ -13,6 +13,7 @@ export const env = {
   refreshTokenTtlSeconds: toNumber(process.env.REFRESH_TOKEN_TTL_SECONDS, 2_592_000),
   prestashopParametersPath:
     process.env.PRESTASHOP_PARAMETERS_PATH ?? "/var/www/boxandbuy.com/public_html/app/config/parameters.php",
+  prestashopBaseUrl: (process.env.PRESTASHOP_BASE_URL ?? "https://www.boxandbuy.com").replace(/\/+$/, ""),
   demoUserEmail: process.env.DEMO_USER_EMAIL ?? "buyer@boxandbuy.local",
   demoUserPassword: process.env.DEMO_USER_PASSWORD ?? "Password123!",
   demoUserName: process.env.DEMO_USER_NAME ?? "Demo Buyer"
