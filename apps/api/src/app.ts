@@ -11,6 +11,7 @@ import { createMobileOrdersRouter } from "./routes/mobile-orders";
 import { createMobileRfqsRouter } from "./routes/mobile-rfqs";
 import { createMobileSellerActionsRouter } from "./routes/mobile-seller-actions";
 import { createMobileSellerRouter } from "./routes/mobile-seller";
+import { createMobileTelemetryRouter } from "./routes/mobile-telemetry";
 import type { AuthProvider } from "./services/auth-provider";
 import { GrowthAnalyticsService } from "./services/growth-analytics-service";
 import { PrestashopBusinessService } from "./services/prestashop-business-service";
@@ -19,6 +20,7 @@ import { PrestashopCatalogService } from "./services/prestashop-catalog-service"
 import { PrestashopOrderService } from "./services/prestashop-order-service";
 import { PrestashopRfqService } from "./services/prestashop-rfq-service";
 import { PrestashopSellerActionsService } from "./services/prestashop-seller-actions-service";
+import { TelemetryLogService } from "./services/telemetry-log-service";
 import { DemoAuthProvider } from "./services/demo-auth-provider";
 import { PrestashopAuthProvider } from "./services/prestashop-auth-provider";
 
@@ -40,6 +42,7 @@ export function createApp() {
   const rfqService = new PrestashopRfqService(businessService);
   const growthAnalyticsService = new GrowthAnalyticsService();
   const sellerActionsService = new PrestashopSellerActionsService();
+  const telemetryLogService = new TelemetryLogService();
 
   app.disable("x-powered-by");
   app.use(express.json());
@@ -62,6 +65,7 @@ export function createApp() {
   app.use("/api/mobile/rfqs", createMobileRfqsRouter(authProvider, rfqService));
   app.use("/api/mobile/seller", createMobileSellerRouter(authProvider, growthAnalyticsService));
   app.use("/api/mobile/seller", createMobileSellerActionsRouter(authProvider, sellerActionsService));
+  app.use("/api/mobile/telemetry", createMobileTelemetryRouter(authProvider, telemetryLogService));
 
   app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
     const message = error instanceof Error ? error.message : "Unexpected error";

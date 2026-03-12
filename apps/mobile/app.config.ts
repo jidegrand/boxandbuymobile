@@ -1,6 +1,9 @@
 import type { ConfigContext, ExpoConfig } from "expo/config";
 
 export default function appConfig(_context: ConfigContext): ExpoConfig {
+  const deepLinkDomain = process.env.EXPO_PUBLIC_DEEP_LINK_DOMAIN ?? "";
+  const updatesUrl = process.env.EXPO_PUBLIC_UPDATES_URL ?? "";
+
   return {
     name: "BoxAndBuy Mobile",
     slug: "boxandbuy-mobile",
@@ -10,16 +13,53 @@ export default function appConfig(_context: ConfigContext): ExpoConfig {
     userInterfaceStyle: "light",
     plugins: [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-notifications",
+      "expo-updates"
     ],
+    runtimeVersion: {
+      policy: "appVersion"
+    },
+    updates: {
+      enabled: true,
+      checkAutomatically: "ON_LOAD",
+      fallbackToCacheTimeout: 0,
+      ...(updatesUrl ? { url: updatesUrl } : {})
+    },
+    ios: {
+      bundleIdentifier: process.env.EXPO_PUBLIC_IOS_BUNDLE_ID ?? "com.boxandbuy.mobile",
+      associatedDomains: deepLinkDomain ? [`applinks:${deepLinkDomain}`] : []
+    },
+    android: {
+      package: process.env.EXPO_PUBLIC_ANDROID_PACKAGE ?? "com.boxandbuy.mobile",
+      intentFilters: deepLinkDomain
+        ? [
+            {
+              action: "VIEW",
+              autoVerify: true,
+              data: [
+                {
+                  scheme: "https",
+                  host: deepLinkDomain
+                }
+              ],
+              category: ["BROWSABLE", "DEFAULT"]
+            }
+          ]
+        : []
+    },
     experiments: {
       typedRoutes: true
     },
     extra: {
       apiBaseUrl: process.env.EXPO_PUBLIC_API_BASE_URL ?? "https://api.boxandbuy.local",
       stripePublishableKey: process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "",
-      appEnv: process.env.EXPO_PUBLIC_APP_ENV ?? "development"
+      appEnv: process.env.EXPO_PUBLIC_APP_ENV ?? "development",
+      eas: {
+        projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID ?? ""
+      },
+      deepLinkDomain,
+      updatesUrl
     }
   };
 }
-

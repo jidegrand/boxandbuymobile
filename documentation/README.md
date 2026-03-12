@@ -6,6 +6,8 @@ Files:
 - `mobile-app-sprint-plan.md`: phase-by-phase sprint plan with scope and exit criteria.
 - `mobile-app-delivery-sheet.csv`: task-level delivery sheet with owner, dependency, validation, and status columns.
 - `mobile-app-validation-matrix.md`: co-validation gates, acceptance checks, and release criteria.
+- `mobile-release-hardening.md`: Sprint 10 hardening work completed in code.
+- `mobile-release-checklist.md`: release configuration and smoke-test checklist.
 
 Planning assumptions:
 - V1 scope is `buyer + B2B`.

@@ -19,6 +19,7 @@ import {
 } from "../../hooks/use-business";
 import { useRfqs } from "../../hooks/use-rfqs";
 import { useSession } from "../../hooks/use-session";
+import { useReleaseStatus } from "../../lib/release";
 import { formatCurrency, formatDateTime, formatStatusLabel } from "../../lib/format";
 import { api } from "../../lib/api";
 import { queryClient } from "../../lib/query-client";
@@ -87,6 +88,7 @@ export default function AccountScreen() {
   const session = useSession();
   const hydrated = useAuthStore((state) => state.hydrated);
   const accessToken = useAuthStore((state) => state.accessToken);
+  const release = useReleaseStatus();
   const businessOverview = useBusinessOverview();
   const rfqs = useRfqs();
   const submitBusinessApplication = useSubmitBusinessApplication();
@@ -138,6 +140,7 @@ export default function AccountScreen() {
     await queryClient.removeQueries({ queryKey: ["business"] });
     await queryClient.removeQueries({ queryKey: ["rfqs"] });
     await queryClient.removeQueries({ queryKey: ["seller"] });
+    await queryClient.removeQueries({ queryKey: ["seller-actions"] });
     router.replace("/(auth)/login");
   };
 
@@ -222,6 +225,21 @@ export default function AccountScreen() {
         ) : (
           <Text className="text-sm text-muted">No active API session yet.</Text>
         )}
+      </SectionCard>
+
+      <SectionCard title="Release Status">
+        <Text className="text-sm text-muted">
+          Version {release.appVersion} ({release.buildVersion})
+        </Text>
+        <Text className="text-sm text-muted">Environment {release.appEnv}</Text>
+        <Text className="text-sm text-muted">Runtime {release.runtimeVersion}</Text>
+        <Text className="text-sm text-muted">
+          OTA updates {release.isUpdateEnabled ? "enabled" : "disabled"}
+          {release.channel ? ` · ${release.channel}` : ""}
+        </Text>
+        {release.updateId ? (
+          <Text className="text-sm text-muted">Update ID {release.updateId}</Text>
+        ) : null}
       </SectionCard>
 
       <SectionCard title="Actions">

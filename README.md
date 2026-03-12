@@ -12,14 +12,14 @@ documentation.
 
 ## Current focus
 
-- Sprint 2 auth foundation
-- buyer mobile API scaffold
-- shared auth contract
-- mobile auth client and storage flow
+- Sprint 10 release hardening
+- mobile telemetry and push-token capture
+- offline/focus lifecycle handling
+- seller action and buyer/B2B end-to-end coverage
 
 ## Next implementation steps
 
-1. Install dependencies from the repo root.
-2. Start the mobile API and verify the demo auth flow.
-3. Create the first Expo development build.
-4. Replace placeholder screens with live buyer auth and account flows.
+1. Populate `apps/mobile/.env` from `apps/mobile/.env.example`.
+2. Create an EAS project and set `EXPO_PUBLIC_EAS_PROJECT_ID`.
+3. Produce a preview development build with `eas build --profile preview`.
+4. Run the release checklist in `documentation/mobile-release-checklist.md`.

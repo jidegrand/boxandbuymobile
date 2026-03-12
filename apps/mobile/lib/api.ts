@@ -48,24 +48,47 @@ import type {
 } from "@boxandbuy/contracts";
 
 import { env } from "./env";
+import { recordApiError } from "./telemetry";
 import { useAuthStore } from "../store/auth.store";
 
 type RequestOptions = Omit<RequestInit, "headers"> & {
   headers?: Record<string, string>;
 };
 
-async function requestOnce<T>(path: string, options: RequestOptions = {}): Promise<Response> {
-  const accessToken = useAuthStore.getState().accessToken;
+const REQUEST_TIMEOUT_MS = 15_000;
 
-  return fetch(`${env.apiBaseUrl}${path}`, {
-    ...options,
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-      ...options.headers
-    }
-  });
+function createRequestId() {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+async function requestOnce(path: string, options: RequestOptions = {}, requestId = createRequestId()): Promise<Response> {
+  const accessToken = useAuthStore.getState().accessToken;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  try {
+    return await fetch(`${env.apiBaseUrl}${path}`, {
+      ...options,
+      signal: controller.signal,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "X-Client-Request-Id": requestId,
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        ...options.headers
+      }
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error && error.name === "AbortError"
+        ? "The request timed out. Please try again."
+        : "Unable to reach BoxAndBuy right now. Check your connection and try again.";
+
+    void recordApiError(path, message);
+    throw new Error(message);
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function tryRefreshSession(): Promise<boolean> {
@@ -95,16 +118,19 @@ async function tryRefreshSession(): Promise<boolean> {
 }
 
 async function request<T>(path: string, options: RequestOptions = {}, retry = true): Promise<T> {
-  let response = await requestOnce<T>(path, options);
+  const requestId = createRequestId();
+  let response = await requestOnce(path, options, requestId);
 
   if (response.status === 401 && retry && (await tryRefreshSession())) {
-    response = await requestOnce<T>(path, options);
+    response = await requestOnce(path, options, requestId);
   }
 
   if (!response.ok) {
     const fallback = { error: `Request failed: ${response.status}` };
     const payload = await response.json().catch(() => fallback);
-    throw new Error(payload.error ?? fallback.error);
+    const message = payload.error ?? fallback.error;
+    void recordApiError(path, message, response.status);
+    throw new Error(message);
   }
 
   if (response.status === 204) {
