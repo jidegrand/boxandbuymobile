@@ -84,6 +84,23 @@ export default function SellerScreen() {
         </SectionCard>
       ) : null}
 
+      {sellerContext.data ? (
+        <SectionCard title="Operations">
+          <Link href="/seller/profile" className="rounded-xl bg-ink px-4 py-3 text-center text-white">
+            Manage seller profile
+          </Link>
+          <Link href="/seller/messages" className="rounded-xl border border-ink/10 px-4 py-3 text-center text-ink">
+            Seller messages
+          </Link>
+          <Link href="/seller/payouts" className="rounded-xl border border-ink/10 px-4 py-3 text-center text-ink">
+            Request payouts
+          </Link>
+          <Link href="/seller/activity" className="rounded-xl border border-ink/10 px-4 py-3 text-center text-ink">
+            Action log
+          </Link>
+        </SectionCard>
+      ) : null}
+
       {sellerContext.isSuccess ? (
         <>
           <SectionCard title="Overview">

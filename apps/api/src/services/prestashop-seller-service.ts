@@ -15,6 +15,7 @@ type SellerLookupRow = {
   seller_email: string | null;
   seller_firstname: string | null;
   seller_lastname: string | null;
+  manager_permission?: string | null;
 };
 
 export type SellerSessionClaims = {
@@ -26,8 +27,31 @@ export type SellerSessionClaims = {
   email: string;
 };
 
+export type MarketplaceSellerAccess = SellerSessionClaims & {
+  sellerNumericId: number;
+  ownerCustomerId: number;
+  actorCustomerId: number;
+  managerPermissions: string[];
+};
+
 export class PrestashopSellerService {
   async resolveSessionForUser(user: SessionUser): Promise<SellerSessionClaims | null> {
+    const access = await this.resolveMarketplaceAccessForUser(user);
+    if (!access) {
+      return null;
+    }
+
+    return {
+      sellerId: access.sellerId,
+      userSub: access.userSub,
+      role: access.role,
+      storeIds: access.storeIds,
+      displayName: access.displayName,
+      email: access.email
+    };
+  }
+
+  async resolveMarketplaceAccessForUser(user: SessionUser): Promise<MarketplaceSellerAccess | null> {
     const customerId = this.parseCustomerId(user.id);
     const owner = await this.findOwnerSeller(customerId);
 
@@ -86,7 +110,8 @@ export class PrestashopSellerService {
           seller_lang.shop_name,
           owner.email AS seller_email,
           owner.firstname AS seller_firstname,
-          owner.lastname AS seller_lastname
+          owner.lastname AS seller_lastname,
+          manager.permission AS manager_permission
         FROM \`${config.prefix}ets_mp_seller_manager\` manager
         INNER JOIN \`${config.prefix}ets_mp_seller\` seller
           ON seller.id_customer = manager.id_customer
@@ -107,14 +132,19 @@ export class PrestashopSellerService {
     return (rows[0] as SellerLookupRow | undefined) ?? null;
   }
 
-  private mapClaims(user: SessionUser, row: SellerLookupRow, role: SellerRole): SellerSessionClaims {
+  private mapClaims(user: SessionUser, row: SellerLookupRow, role: SellerRole): MarketplaceSellerAccess {
+    const actorCustomerId = this.parseCustomerId(user.id);
     const storeId = `ps-seller-${row.id_seller}-main`;
     const ownerName = `${row.seller_firstname ?? ""} ${row.seller_lastname ?? ""}`.trim();
     const displayName = row.shop_name?.trim() || user.name?.trim() || ownerName || `Seller ${row.id_seller}`;
 
     return {
+      sellerNumericId: row.id_seller,
+      ownerCustomerId: row.id_customer,
+      actorCustomerId,
+      managerPermissions: role === "manager" ? this.parseManagerPermissions(row.manager_permission) : [],
       sellerId: `ps-seller-${row.id_seller}`,
-      userSub: `ps-customer-${this.parseCustomerId(user.id)}`,
+      userSub: `ps-customer-${actorCustomerId}`,
       role,
       storeIds: [storeId],
       displayName,
@@ -130,5 +160,16 @@ export class PrestashopSellerService {
     }
 
     return parsed;
+  }
+
+  private parseManagerPermissions(value: string | null | undefined) {
+    if (!value) {
+      return [];
+    }
+
+    return value
+      .split(",")
+      .map((item) => item.trim().toLowerCase())
+      .filter(Boolean);
   }
 }

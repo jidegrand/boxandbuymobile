@@ -42,6 +42,11 @@ export default function RootLayout() {
           <Stack.Screen name="seller/campaigns" options={{ title: "Seller Campaigns" }} />
           <Stack.Screen name="seller/listings" options={{ title: "Listing Health" }} />
           <Stack.Screen name="seller/affiliates" options={{ title: "Affiliates" }} />
+          <Stack.Screen name="seller/profile" options={{ title: "Seller Profile" }} />
+          <Stack.Screen name="seller/messages/index" options={{ title: "Seller Messages" }} />
+          <Stack.Screen name="seller/messages/[id]" options={{ title: "Seller Thread" }} />
+          <Stack.Screen name="seller/payouts" options={{ title: "Seller Payouts" }} />
+          <Stack.Screen name="seller/activity" options={{ title: "Seller Activity" }} />
         </Stack>
       </QueryClientProvider>
     </Providers>

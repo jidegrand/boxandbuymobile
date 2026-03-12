@@ -25,11 +25,22 @@ import type {
   RfqDetail,
   RfqListResponse,
   SellerAffiliatesResponse,
+  SellerAuditLogResponse,
   SellerCampaignsResponse,
   SellerContextResponse,
   SellerDashboardResponse,
   SellerFilterQuery,
   SellerListingsResponse,
+  SellerMessageReplyInput,
+  SellerMessageReplyResponse,
+  SellerMessageThreadResponse,
+  SellerMessageThreadsResponse,
+  SellerPayoutOverviewResponse,
+  SellerPayoutRequestInput,
+  SellerPayoutRequestResponse,
+  SellerProfileMutationResponse,
+  SellerProfileResponse,
+  SellerProfileUpdateInput,
   SellerProductsResponse,
   SellerTrendsResponse,
   SubmitRfqResponse,
@@ -148,6 +159,39 @@ export const api = {
   },
   getSellerContext() {
     return request<SellerContextResponse>("/api/mobile/seller/context");
+  },
+  getSellerProfile() {
+    return request<SellerProfileResponse>("/api/mobile/seller/profile");
+  },
+  updateSellerProfile(payload: SellerProfileUpdateInput) {
+    return request<SellerProfileMutationResponse>("/api/mobile/seller/profile", {
+      method: "PUT",
+      body: JSON.stringify(payload)
+    });
+  },
+  getSellerMessageThreads() {
+    return request<SellerMessageThreadsResponse>("/api/mobile/seller/messages");
+  },
+  getSellerMessageThread(threadId: string) {
+    return request<SellerMessageThreadResponse>(`/api/mobile/seller/messages/${threadId}`);
+  },
+  replyToSellerMessageThread(threadId: string, payload: SellerMessageReplyInput) {
+    return request<SellerMessageReplyResponse>(`/api/mobile/seller/messages/${threadId}/replies`, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+  },
+  getSellerPayoutOverview() {
+    return request<SellerPayoutOverviewResponse>("/api/mobile/seller/payouts");
+  },
+  submitSellerPayoutRequest(payload: SellerPayoutRequestInput) {
+    return request<SellerPayoutRequestResponse>("/api/mobile/seller/payouts", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+  },
+  getSellerAuditLog() {
+    return request<SellerAuditLogResponse>("/api/mobile/seller/audit");
   },
   getSellerDashboard(filters: SellerFilterQuery = {}) {
     return request<SellerDashboardResponse>(

@@ -16,6 +16,8 @@ export const env = {
   prestashopBaseUrl: (process.env.PRESTASHOP_BASE_URL ?? "https://www.boxandbuy.com").replace(/\/+$/, ""),
   growthEnvPath: process.env.GROWTH_ENV_PATH ?? "/opt/boxandbuy-growth/.env",
   growthWebBaseUrl: (process.env.GROWTH_WEB_BASE_URL ?? "http://127.0.0.1:3100").replace(/\/+$/, ""),
+  sellerAuditLogPath:
+    process.env.SELLER_AUDIT_LOG_PATH ?? `${process.cwd()}/apps/api/.data/seller-actions-audit.jsonl`,
   demoUserEmail: process.env.DEMO_USER_EMAIL ?? "buyer@boxandbuy.local",
   demoUserPassword: process.env.DEMO_USER_PASSWORD ?? "Password123!",
   demoUserName: process.env.DEMO_USER_NAME ?? "Demo Buyer"

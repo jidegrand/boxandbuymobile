@@ -9,6 +9,7 @@ import { createMobileCheckoutRouter } from "./routes/mobile-checkout";
 import { createMobileLocationsRouter } from "./routes/mobile-locations";
 import { createMobileOrdersRouter } from "./routes/mobile-orders";
 import { createMobileRfqsRouter } from "./routes/mobile-rfqs";
+import { createMobileSellerActionsRouter } from "./routes/mobile-seller-actions";
 import { createMobileSellerRouter } from "./routes/mobile-seller";
 import type { AuthProvider } from "./services/auth-provider";
 import { GrowthAnalyticsService } from "./services/growth-analytics-service";
@@ -17,6 +18,7 @@ import { PrestashopCartService } from "./services/prestashop-cart-service";
 import { PrestashopCatalogService } from "./services/prestashop-catalog-service";
 import { PrestashopOrderService } from "./services/prestashop-order-service";
 import { PrestashopRfqService } from "./services/prestashop-rfq-service";
+import { PrestashopSellerActionsService } from "./services/prestashop-seller-actions-service";
 import { DemoAuthProvider } from "./services/demo-auth-provider";
 import { PrestashopAuthProvider } from "./services/prestashop-auth-provider";
 
@@ -37,6 +39,7 @@ export function createApp() {
   const orderService = new PrestashopOrderService(cartService);
   const rfqService = new PrestashopRfqService(businessService);
   const growthAnalyticsService = new GrowthAnalyticsService();
+  const sellerActionsService = new PrestashopSellerActionsService();
 
   app.disable("x-powered-by");
   app.use(express.json());
@@ -58,6 +61,7 @@ export function createApp() {
   app.use("/api/mobile/orders", createMobileOrdersRouter(authProvider, orderService));
   app.use("/api/mobile/rfqs", createMobileRfqsRouter(authProvider, rfqService));
   app.use("/api/mobile/seller", createMobileSellerRouter(authProvider, growthAnalyticsService));
+  app.use("/api/mobile/seller", createMobileSellerActionsRouter(authProvider, sellerActionsService));
 
   app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
     const message = error instanceof Error ? error.message : "Unexpected error";

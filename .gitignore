@@ -9,5 +9,6 @@ coverage/
 apps/mobile/.env
 apps/mobile/.env.local
 apps/api/.env
+apps/api/.data/
 apps/mobile/ios/
 apps/mobile/android/
