@@ -40,6 +40,7 @@ EXPO_PUBLIC_ANDROID_PACKAGE=com.boxandbuy.mobile
 ```
 
 ## Known Remaining Blockers
-- EAS project is not yet created on this server.
+- EAS project is created, but future sessions still need Expo auth to run builds.
 - `app.boxandbuy.com` does not exist, so universal-link domain setup is deferred.
+- iOS preview builds still need Apple Developer credentials.
 - Native store builds still need real-device validation.

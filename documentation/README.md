@@ -10,6 +10,7 @@ Files:
 - `mobile-release-checklist.md`: release configuration and smoke-test checklist.
 - `mobile-api-deployment.md`: deployment path for `https://boxandbuy.com/mobile-api`.
 - `eas-account-setup.md`: exact Expo login, project-link, and first build commands.
+- `../SESSION-STATE.md`: quick reconnect file for the current release state and blocker.
 
 Planning assumptions:
 - V1 scope is `buyer + B2B`.
