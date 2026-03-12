@@ -31,6 +31,9 @@ export default function appConfig(_context: ConfigContext): ExpoConfig {
     },
     ios: {
       bundleIdentifier: process.env.EXPO_PUBLIC_IOS_BUNDLE_ID ?? "com.boxandbuy.mobile",
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false
+      },
       associatedDomains: deepLinkDomain ? [`applinks:${deepLinkDomain}`] : []
     },
     android: {
