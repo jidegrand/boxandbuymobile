@@ -57,3 +57,8 @@ npx eas-cli@latest build --platform android --profile production
 - `npx eas-cli@latest project:info`
 - confirm `EXPO_PUBLIC_EAS_PROJECT_ID` is present in `apps/mobile/.env`
 - run the release checklist in `documentation/mobile-release-checklist.md`
+
+## Current Build Status
+- Android preview build queued successfully:
+  `https://expo.dev/accounts/boxandbuy/projects/boxandbuy-mobile/builds/7423194c-a126-4dd0-9c8e-102836ea9db9`
+- iOS preview build is blocked on Apple Developer login or `credentials.json`.
